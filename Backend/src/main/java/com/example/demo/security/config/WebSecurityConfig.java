@@ -17,6 +17,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * @EnableWebSecurity allows Spring to find and automatically apply the class to the global Web Security.
+ *
+ * – @EnableGlobalMethodSecurity provides AOP security on methods.
+ * It enables @PreAuthorize, @PostAuthorize, it also supports JSR-250.
+ * */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
@@ -46,11 +52,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    /**
+     * We also need a PasswordEncoder for the DaoAuthenticationProvider.
+     * If we don’t specify, it will use plain text
+     * */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * We override the configure(HttpSecurity http) method from WebSecurityConfigurerAdapter interface.
+     * It tells Spring Security how we configure CORS and CSRF,
+     * when we want to require all users to be authenticated or not,
+     * which filter (AuthTokenFilter) and when we want it to work
+     * (filter before UsernamePasswordAuthenticationFilter),
+     * which Exception Handler is chosen (AuthEntryPointJwt).
+     * */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
